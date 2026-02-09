@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.0",
     "loguru>=0.7.0",
+    "gradio>=4.0.0",
 ]
 
 [project.optional-dependencies]
