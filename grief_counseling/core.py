@@ -3,13 +3,13 @@
 from pydantic import BaseModel
 
 
-class Config(BaseModel):
+class Entity(BaseModel):
     """Application configuration."""
 
     name: str
     debug: bool = False
 
 
-def process_config(config: Config) -> str:
+def process_config(entity: Entity) -> str:
     """Process configuration and return result."""
-    return f"Configured app: {config.name} (debug={config.debug})"
+    return f"Configured app: {entity.name} (debug={entity.debug})"

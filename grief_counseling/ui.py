@@ -3,7 +3,8 @@
 import gradio as gr
 from loguru import logger
 
-from grief_counseling.core import Config, process_config
+from grief_counseling.config import Config
+from grief_counseling.core import Entity, process_config
 
 
 def create_app() -> gr.Blocks:
@@ -12,6 +13,7 @@ def create_app() -> gr.Blocks:
     with app:
         gr.Markdown("# My App")
         gr.Markdown("A modern Python application with Gradio UI")
+        gr.Markdown(f"LLM: {Config().LLM_MODEL_NAME}")
 
         with gr.Row():
             app_name = gr.Textbox(
@@ -27,8 +29,8 @@ def create_app() -> gr.Blocks:
         def process(name: str, debug: bool) -> str:
             """Process the config."""
             logger.info(f"Processing: {name}, debug={debug}")
-            config = Config(name=name, debug=debug)
-            result = process_config(config)
+            entity = Entity(name=name, debug=debug)
+            result = process_config(entity)
             return result
 
         submit_btn.click(
