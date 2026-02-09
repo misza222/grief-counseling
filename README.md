@@ -13,7 +13,7 @@ The idea is that it helps people who have lost someone close to them, to process
  - evals
 1. Steps:
  - [x] Project scaffold with `uv`
- - [ ] Gradio developer UI with chat interface
+ - [x] Gradio developer UI with chat interface
  - [ ] templating for prompts (choose engine)
  - [ ] visualize app state in UI (mem, recent prompts)
  - [ ] core and session memory

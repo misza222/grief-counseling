@@ -1,43 +1,67 @@
 """Gradio UI for grief_counseling."""
 
 import gradio as gr
-from loguru import logger
 
-from grief_counseling.config import Config
-from grief_counseling.core import Entity, process_config
+from grief_counseling.utils.client import call_llm
+
+
+def interact(message: str, history: list):
+    """
+    Main function - sends message to LLM without any system prompt.
+    """
+    if not message or not message.strip():
+        return history, {"status": "No message"}, ""
+
+    # Build messages from history (no system prompt!)
+    messages = [{"role": msg["role"], "content": msg["content"]} for msg in history]
+    messages.append({"role": "user", "content": message})
+
+    # Call LLM directly
+    try:
+        response_text = call_llm(messages)
+    except Exception as e:
+        error_msg = f"Error generating response: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return history, {"error": error_msg}, ""
+
+    # Update history
+    history.append({"role": "user", "content": message})
+    history.append({"role": "assistant", "content": response_text})
+
+    return history
+
+
+def reset_conversation():
+    """Resets conversation."""
+    return []
 
 
 def create_app() -> gr.Blocks:
     """Create and configure Gradio app."""
-    app = gr.Blocks(title="My App")
+    app = gr.Blocks(title="Grief Counseling App")
     with app:
-        gr.Markdown("# My App")
-        gr.Markdown("A modern Python application with Gradio UI")
-        gr.Markdown(f"LLM: {Config().LLM_MODEL_NAME}")
+        gr.Markdown("# Grief Counseling App")
+        gr.Markdown("Developer UI for testing core functionality and LLM integration.")
 
-        with gr.Row():
-            app_name = gr.Textbox(
-                label="App Name",
-                placeholder="Enter app name",
-                value="my-awesome-app",
-            )
-            debug_mode = gr.Checkbox(label="Debug Mode", value=False)
+        with gr.Row(), gr.Column(scale=7):
+            chatbot = gr.Chatbot(height=600, show_label=False)
 
-        submit_btn = gr.Button("Process", variant="primary")
-        output = gr.Textbox(label="Result", interactive=False)
+            msg = gr.Textbox(placeholder="Message...", lines=2, show_label=False)
 
-        def process(name: str, debug: bool) -> str:
-            """Process the config."""
-            logger.info(f"Processing: {name}, debug={debug}")
-            entity = Entity(name=name, debug=debug)
-            result = process_config(entity)
-            return result
+            with gr.Row():
+                send_btn = gr.Button("Send", variant="primary", scale=3)
+                clear_btn = gr.Button("Clear", variant="secondary", scale=1)
 
-        submit_btn.click(
-            fn=process,
-            inputs=[app_name, debug_mode],
-            outputs=output,
+        # Event handlers
+        send_btn.click(fn=interact, inputs=[msg, chatbot], outputs=[chatbot]).then(
+            lambda: "", None, msg
         )
+
+        msg.submit(fn=interact, inputs=[msg, chatbot], outputs=[chatbot]).then(
+            lambda: "", None, msg
+        )
+
+        clear_btn.click(fn=reset_conversation, inputs=[], outputs=[chatbot])
 
     return app
 
