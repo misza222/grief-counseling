@@ -5,10 +5,11 @@ This module provides the only place for LLM calls in the entire system.
 """
 
 from functools import lru_cache
-from typing import Any
+from typing import Any, cast
 
 import instructor
 from openai import OpenAI
+from pydantic import BaseModel
 
 from grief_counseling.config import Config
 
@@ -33,7 +34,7 @@ def get_llm_client():
     return instructor.patch(client, mode=instructor.Mode.MD_JSON)
 
 
-def call_llm(messages: list[dict], response_model: Any | None = None, **kwargs) -> Any:
+def call_llm(messages: list[dict], response_model: Any | None = None, **kwargs) -> str | BaseModel:
     """
     Calls LLM API.
 
@@ -81,8 +82,8 @@ def call_llm(messages: list[dict], response_model: Any | None = None, **kwargs) 
     if response_model:
         # Structured output (Pydantic model)
         default_params["response_model"] = response_model
-        return client.chat.completions.create(**default_params)
+        return cast(BaseModel, client.chat.completions.create(**default_params))
     else:
         # Plain text (no structured output)
         response = client.chat.completions.create(**default_params)
-        return response.choices[0].message.content
+        return str(response.choices[0].message.content)

@@ -2,29 +2,25 @@
 
 import gradio as gr
 
-from grief_counseling.utils.client import call_llm
+from grief_counseling.agent import Agent
+
+agent = Agent()
 
 
 def interact(message: str, history: list):
     """
     Main function - sends message to LLM without any system prompt.
     """
-    if not message or not message.strip():
-        return history, {"status": "No message"}, ""
 
-    # Build messages from history (no system prompt!)
-    messages = [{"role": msg["role"], "content": msg["content"]} for msg in history]
-    messages.append({"role": "user", "content": message})
+    message_history = [{"role": msg["role"], "content": msg["content"]} for msg in history]
 
-    # Call LLM directly
     try:
-        response_text = call_llm(messages)
+        response_text = agent.respond(message, message_history)
     except Exception as e:
         error_msg = f"Error generating response: {str(e)}"
         print(f"ERROR: {error_msg}")
         return history, {"error": error_msg}, ""
 
-    # Update history
     history.append({"role": "user", "content": message})
     history.append({"role": "assistant", "content": response_text})
 

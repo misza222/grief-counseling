@@ -778,6 +778,7 @@ source = { editable = "." }
 dependencies = [
     { name = "gradio" },
     { name = "instructor" },
+    { name = "jinja2" },
     { name = "loguru" },
     { name = "openai" },
     { name = "pydantic" },
@@ -808,6 +809,7 @@ requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=24.0.0" },
     { name = "gradio", specifier = ">=4.0.0" },
     { name = "instructor" },
+    { name = "jinja2" },
     { name = "loguru", specifier = ">=0.7.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "openai" },

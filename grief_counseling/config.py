@@ -16,6 +16,9 @@ class Config:
     Main configuration class for grief_counseling.
     """
 
+    # App settings
+    AGENT_NAME = "Steve"
+
     # LLM
     LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "gpt-4")
     LLM_API_KEY = os.getenv("LLM_API_KEY")
@@ -29,3 +32,7 @@ class Config:
             "one of the LLM_* env variables not found! "
             "Please set it in your environment variables or .env file."
         )
+
+    # Folders
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
